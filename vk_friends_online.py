@@ -1,7 +1,8 @@
 import vk
 import getpass
 
-APP_ID = 6664933
+
+APP_ID = #id
 
 
 def get_user_login():
