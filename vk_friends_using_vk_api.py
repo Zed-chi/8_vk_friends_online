@@ -1,59 +1,49 @@
-import vk_api
+import vk
 import getpass
+
+APP_ID = 6664933
 
 
 def get_user_login():
-    return input("Login: ")
+    return input('Login:')
 
 
 def get_user_password():
-    return getpass.getpass(prompt="Password: ")
-
-
-def auth_handler():
-    key = input("Enter authentication code:")
-    remember_device = True
-    return key, remember_device
+    return getpass.getpass(prompt="Password:")
 
 
 def get_api(login, password):
-    session = vk_api.VkApi(
-        login,
-        password,
-        auth_handler=auth_handler
+    session = vk.AuthSession(
+        app_id=APP_ID,
+        user_login=login,
+        user_password=password,
+        scope='friends'
     )
-    try:
-        session.auth()
-    except vk_api.AuthError as error_msg:
-        print(error_msg)
-    else:
-        return session.get_api()
+    return vk.API(session, v="5.80")
 
 
 def get_friends_online(api):
-    online_ids = api.friends.getOnline()
-    online_usernames = api.users.get(
-            user_ids=format(online_ids),
-            fields="first_name,last_name",
-            )
-    return online_usernames
+    friends_id_online = api.friends.getOnline()
+    return api.users.get(user_ids=friends_id_online)
 
 
-def print_online_friends(online_usernames):
-    print("\n=== Online friends: {} ===".format(len(online_usernames)))
-    for i in online_usernames:
-        name = i['first_name']+" "+i['last_name']
-        print("=>", name)
+def print_online_friends(friends_online):
+    if friends_online:
+        print("=== Online friends: {} ===".format(len(friends_online)))
+        for friend in friends_online:
+            print('{} {}'.format(friend["first_name"], friend["last_name"]))
 
 
 def main():
     login = get_user_login()
     password = get_user_password()
-    vk_api = get_api(login, password)
+    try:
+        vk_api = get_api(login, password)
+    except vk.exceptions.VkAuthError as err:
+        exit(err)
     friends_online = get_friends_online(vk_api)
     print_online_friends(friends_online)
 
 
 if __name__ == '__main__':
     main()
-
