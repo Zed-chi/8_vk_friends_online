@@ -1,32 +1,50 @@
 import vk
+import getpass
 
-
-APP_ID = -1  # чтобы получить app_id, нужно зарегистрировать своё приложение на https://vk.com/dev
+APP_ID = 6664933
 
 
 def get_user_login():
-    pass
+    return input('Login:')
 
 
 def get_user_password():
-    pass
+    return getpass.getpass(prompt="Password:")
 
 
-def get_online_friends(login, password):
+def get_api(login, password):
     session = vk.AuthSession(
         app_id=APP_ID,
         user_login=login,
         user_password=password,
+        scope='friends'
     )
-    api = vk.API(session)
-    # например, api.friends.get()
+    return vk.API(session, v="5.80")
 
 
-def output_friends_to_console(friends_online):
-    pass
+def get_friends_online(api):
+    friends_id_online = api.friends.getOnline()
+    return api.users.get(user_ids=friends_id_online)
 
-if __name__ == '__main__':
+
+def print_online_friends(friends_online):
+    if friends_online:
+        print("=== {} friends online ===".format(len(friends_online)))
+        for friend in friends_online:
+            print('{} {}'.format(friend["first_name"], friend["last_name"]))
+
+
+def main():
     login = get_user_login()
     password = get_user_password()
-    friends_online = get_online_friends(login, password)
-    output_friends_to_console(friends_online)
+    try:
+        vk_api = get_api(login, password)
+    except vk.exceptions.VkAuthError as err:
+        exit(err)
+    friends_online = get_friends_online(vk_api)
+    print_online_friends(friends_online)
+
+
+if __name__ == '__main__':
+    main()
+
