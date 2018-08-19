@@ -2,7 +2,7 @@ import vk
 import getpass
 
 
-APP_ID = #id
+APP_ID = 0
 
 
 def get_user_login():
@@ -48,4 +48,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
