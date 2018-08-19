@@ -1,25 +1,25 @@
 import vk
 import getpass
 
-APP_ID = 6664933
+APP_ID = 0
 
 
 def get_user_login():
-    return input('Login:')
+    return input("Login:")
 
 
 def get_user_password():
     return getpass.getpass(prompt="Password:")
 
 
-def get_api(login, password):
+def get_api(login, password, api_v="5.80"):
     session = vk.AuthSession(
         app_id=APP_ID,
         user_login=login,
         user_password=password,
-        scope='friends'
+        scope="friends"
     )
-    return vk.API(session, v="5.80")
+    return vk.API(session, v=api_v)
 
 
 def get_friends_online(api):
@@ -31,7 +31,7 @@ def print_online_friends(friends_online):
     if friends_online:
         print("=== Online friends: {} ===".format(len(friends_online)))
         for friend in friends_online:
-            print('{} {}'.format(friend["first_name"], friend["last_name"]))
+            print("{} {}".format(friend["first_name"], friend["last_name"]))
 
 
 def main():
@@ -45,5 +45,5 @@ def main():
     print_online_friends(friends_online)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
